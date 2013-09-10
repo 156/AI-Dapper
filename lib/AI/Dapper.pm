@@ -32,7 +32,7 @@ our $aud_tagged='';
 our $act='';
 our $actbase=0;
 
-our $cns=8; #size of memory channel
+our $cns=8;
 our $coda;
 
 our $quiet=0;
@@ -46,13 +46,10 @@ our @nn;
 our @jj;
 our @in;
 
-#bootstrap
 sub boot
 {
 	$tagger = new Lingua::EN::Tagger;
 }
-
-#audition
 
 sub textinput
 {
@@ -127,7 +124,6 @@ sub metamemory
 {
 	my $self = shift;
 	
-	# compensate for memory channel width
 	if (@nn > $cns) { pop(@nn); $self->metamemory(); }
 	if (@jj > ($cns / 2)) { pop(@jj); $self->metamemory(); }
 	if (@in > ($cns / 4)) { pop(@in); $self->metamemory(); }
@@ -180,10 +176,8 @@ sub audition
 	return 1;
 }
 
-# constructor
 sub new { bless {}, shift; }
 
-# methods
 sub get_name
 {
 	my $self = shift;
