@@ -159,13 +159,10 @@ sub untag
 	return ($tagger->remove_tags($text));
 }
 
-# returns array of nouns from tagged text
-
 sub nouns { return @nn; }
 sub adjectives { return @jj; }
 sub prepositions { return @in; }
 
-# returns array of adj from tagged text
 sub audition
 {
 	my $self = shift;
