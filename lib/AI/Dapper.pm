@@ -29,14 +29,18 @@ our $pov=0;
 our $aud='';
 our $aud_tagged='';
 
+our $act='';
+our $actbase=0;
+
 our $cns=8; #size of memory channel
 our $coda;
 
 our $quiet=0;
 our $residuum=0;
-our $rjc;
 
 our $tagger;
+
+our %chain;
 
 our @nn;
 our @jj;
@@ -60,11 +64,57 @@ sub textinput
 	$aud = $text;
 	$pov=1;
 	
-	$self->audition();
-	$self->metacognition();
-	$self->metamemory();
+	$self->mainloop();
 	
 	return 1;
+}
+
+sub mainloop
+{
+	my $self = shift;
+	
+	if ($self->security())
+	{
+		$self->strap();
+		$self->audition();
+		$self->metacognition();
+		$self->metamemory();
+		$self->volition();
+		$self->motor();
+		$self->act();
+	}
+	
+}
+
+sub security
+{
+	my $self = shift;
+	
+	return 1;
+}
+
+sub strap
+{
+}
+
+sub volition
+{
+}
+
+sub motor
+{
+	return 0 if ($quiet);
+}
+
+sub act
+{
+	my %nouns=();
+	my ($k,$v);
+	
+	foreach my $noun(@nn) { $nouns{$noun}++; }
+	
+	while ( ($k, $v) = each %nouns )	{ $actbase = $v if ($v>$actbase); }
+	while ( ($k, $v) = each %nouns )	{ $act = $k if($v==$actbase); }
 }
 
 sub metacognition
@@ -77,10 +127,20 @@ sub metamemory
 {
 	my $self = shift;
 	
-	if (@nn > $cns) { pop(@nn); }
-	if (@jj > ($cns / 2)) { pop(@jj); }
-	if (@in > ($cns / 4)) { pop(@in); }
+	# compensate for memory channel width
+	if (@nn > $cns) { pop(@nn); $self->metamemory(); }
+	if (@jj > ($cns / 2)) { pop(@jj); $self->metamemory(); }
+	if (@in > ($cns / 4)) { pop(@in); $self->metamemory(); }
 
+	my @words = split (/ /, $aud);
+	my $i=0;
+	
+	foreach my $w(@words)
+	{
+		$i++;
+		
+		$chain{$w} = $words[$i] if ($words[$i]);
+	}
 }
 
 sub tag
@@ -121,17 +181,6 @@ sub audition
 	}
 	
 	return 1;
-}
-
-sub rejuvenate
-{
-	my $self = shift;
-	
-	@nn = ();
-	@jj = ();
-	@in = ();
-	
-	$rjc++;
 }
 
 # constructor
